@@ -1,50 +1,132 @@
 const router = require("express").Router();
 const { User, Post, Comment } = require('../models');
 
-// router.get("/", (req, res) => {
-//     res.render("login")
-// });
-
-router.get("/login", (req, res) => {
-    res.render("login")
-});
-
-
-
-// route to get all post and render to "all" view
-router.get('/dashboard', async (req, res) => {
-    // We find all posts in the db and set the data equal to postData
-    const postData = await Post.findAll().catch((err) => {
-        res.json(err);
-    });
-    // We use map() to iterate over postData and then add .get({ plain: true }) each object to serialize it. 
-    const posts = postData.map((post) => post.get({ plain: true }));
-    // We render the template, 'all', passing in posts, a new array of serialized objects.
-    res.render('dashboard', { posts });
-});
-
-
-// Posts
-// route to get all Post from a user using params
-router.get('/:id', async (req, res) => {
+// GET all posts
+router.get("/", async (req, res) => {
     try {
-        // We find all post assocaited with this user from params using the param to search by username
-        const postData = await Post.findByPk(req.params.id)
-        // if this user !exist than display error and return
-        if (!postData) {
-            res.status(404).json({ message: 'No user with this username!' });
-            return;
-        }
-        // This returns a sequlize post object back and assigned it to post constant 
-        const post = postData.get({ plain: true });
-        // We render the template, 'post', passing in post, a new array of serialized objects.
-        // need to relook at this code (render code for sure bucko)
-        res.render('post', post);
-    }
-    catch (err) {
-        res.status(500).json(err);
-    };
+        // Get all Posts and JOIN with User data
+        const dbPostData = await Post.findAll({
+            include: [
+                {
+                    model: User,
+                    attributes: ['username'],
+                },
+            ],
+        });
 
+        // Serialize data so the template can read it -- else you get a mass of information that is overwhelming and difficult to work with
+        const posts = dbPostData.map((post) => post.get({ plain: true }));
+
+        // Pass serialized data and session flag into template
+        res.render("all", {
+            posts,
+            username: req.session.username,
+            user_id: req.session.user_id,
+            loggedIn: req.session.loggedIn,
+        });
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+// -----------------------------------------------------------------
+
+// Use withAuth middleware to prevent access to route <-- not suing this yet
+router.get('/dashboard', async (req, res) => {
+    if (!req.session.loggedIn) {
+        res.redirect("/login");
+        return;
+    }
+
+    try {
+
+        // Find the logged in user based on the session ID
+        const userData = await User.findByPk(req.session.user_id,
+            {
+                attributes: { exclude: ['password'] },
+                include:
+                    [{ model: Post }],
+            });
+
+        // console.log("THIS IS USERDATA:",
+        // userData,
+        // "==================================");
+
+        const user = userData.get({ plain: true });
+
+        // console.log("USERRRRRRRRRRRRRRRRRR",
+        // user,
+        // "=====================================")
+        res.render('dashboard', {
+            ...user,
+            loggedIn: req.session.loggedIn
+        });
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+// ------------------------------------------------------------
+// Login route
+router.get("/login", (req, res) => {
+    if (req.session.loggedIn) {
+        res.redirect("/");
+        return;
+    }
+    res.render("login");
+});
+
+// -----------------------------------------------------------------
+
+// GET a single post
+router.get("/:id", async (req, res) => {
+
+    console.log("but do we get me back?");
+
+    if (!req.session.loggedIn) {
+        res.redirect("/login");
+        return;
+    }
+
+    try {
+
+        // console.log(req)
+        const dbPostData = await Post.findByPk(req.params.id, {
+            include: [
+                {
+                    model: Comment,
+                    attributes: ["comment_content", "createdAt"],
+                    include: {
+                        model: User,
+                        attributes: ["username"],
+                    },
+                },
+                { model: User, attributes: ["username"] },
+            ],
+        });
+
+        // console.log(req.params.id);
+
+        const post = dbPostData.get({ plain: true });
+
+        // console.log("============",
+        // post)
+
+        req.session.post_id = post.id;
+
+        console.log("I AM THE POST ID... I HOPE",
+            req.session.post_id) // works
+
+        // console.log(post)
+
+        res.render("post", {
+            post,
+            loggedIn: req.session.loggedIn,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+    }
 });
 
 module.exports = router;
