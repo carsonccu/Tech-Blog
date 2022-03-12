@@ -46,7 +46,7 @@ const updateButtonHandler = async (event) => {
         const id = event.target.getAttribute('data-update');
 
         postID = id;
-        console.log("update ID:",
+        console.log("update ID",
             id)
         const response = await fetch(`/api/posts/${id}`);
 
