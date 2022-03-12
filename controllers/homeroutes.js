@@ -4,7 +4,7 @@ const { User, Post, Comment } = require('../models');
 // GET all posts
 router.get("/", async (req, res) => {
     try {
-        // Get all Posts and JOIN with User data
+
         const dbPostData = await Post.findAll({
             include: [
                 {
@@ -13,11 +13,7 @@ router.get("/", async (req, res) => {
                 },
             ],
         });
-
-        // Serialize data so the template can read it -- else you get a mass of information that is overwhelming and difficult to work with
         const posts = dbPostData.map((post) => post.get({ plain: true }));
-
-        // Pass serialized data and session flag into template
         res.render("all", {
             posts,
             username: req.session.username,
@@ -29,9 +25,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-// -----------------------------------------------------------------
 
-// Use withAuth middleware to prevent access to route <-- not suing this yet
 router.get('/dashboard', async (req, res) => {
     if (!req.session.loggedIn) {
         res.redirect("/login");
@@ -40,7 +34,6 @@ router.get('/dashboard', async (req, res) => {
 
     try {
 
-        // Find the logged in user based on the session ID
         const userData = await User.findByPk(req.session.user_id,
             {
                 attributes: { exclude: ['password'] },
@@ -48,15 +41,10 @@ router.get('/dashboard', async (req, res) => {
                     [{ model: Post }],
             });
 
-        // console.log("THIS IS USERDATA:",
-        // userData,
-        // "==================================");
+
 
         const user = userData.get({ plain: true });
 
-        // console.log("USERRRRRRRRRRRRRRRRRR",
-        // user,
-        // "=====================================")
         res.render('dashboard', {
             ...user,
             loggedIn: req.session.loggedIn
@@ -66,8 +54,7 @@ router.get('/dashboard', async (req, res) => {
     }
 });
 
-// ------------------------------------------------------------
-// Login route
+
 router.get("/login", (req, res) => {
     if (req.session.loggedIn) {
         res.redirect("/");
@@ -76,12 +63,10 @@ router.get("/login", (req, res) => {
     res.render("login");
 });
 
-// -----------------------------------------------------------------
 
-// GET a single post
 router.get("/:id", async (req, res) => {
 
-    console.log("but do we get me back?");
+    console.log("id");
 
     if (!req.session.loggedIn) {
         res.redirect("/login");
@@ -105,19 +90,18 @@ router.get("/:id", async (req, res) => {
             ],
         });
 
-        // console.log(req.params.id);
+
 
         const post = dbPostData.get({ plain: true });
 
-        // console.log("============",
-        // post)
+
 
         req.session.post_id = post.id;
 
-        console.log("I AM THE POST ID... I HOPE",
-            req.session.post_id) // works
+        console.log("I AM THE POST ID",
+            req.session.post_id)
 
-        // console.log(post)
+
 
         res.render("post", {
             post,

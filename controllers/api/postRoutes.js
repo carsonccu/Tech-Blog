@@ -69,7 +69,7 @@ router.get('/:id', async (req, res) => {
 
         const dbPostData = await Post.findByPk(req.params.id, {
 
-        }); // i removed comments and user... mistake?
+        });
 
         const post = dbPostData.get({ plain: true });
 
@@ -122,7 +122,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-//adding a new comment to an existing post
+
 
 router.post('/comment', async (req, res) => {
 
@@ -134,11 +134,6 @@ router.post('/comment', async (req, res) => {
             user_id: req.session.user_id,
             post_id: req.session.post_id,
         });
-
-
-        // console.log("============================",
-        // newComment,
-        // "*~*~*~*~*~*~*~*~*~~*~*~*~*");
 
         res.status(200).json(newComment);
     } catch (err) {
@@ -158,15 +153,6 @@ router.post('/comment', async (req, res) => {
 //         id: req.params.id,
 //       },
 //     })
-//     // console.log("Test console 3");
-
-//     res.status(200).json(updatedComment);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// });
-
-//deleting user's post
 
 router.delete('/:id', async (req, res) => {
     try {

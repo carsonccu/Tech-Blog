@@ -135,7 +135,7 @@ router.post('/login', async (req, res) => {
         if (!dbUserData) {
             res
                 .status(400)
-                .json({ message: 'Incorrect username or password. Please try again!' });
+                .json({ message: 'Incorrect username or password' });
             return;
         }
 
@@ -144,7 +144,7 @@ router.post('/login', async (req, res) => {
         if (!validPassword) {
             res
                 .status(400)
-                .json({ message: 'Incorrect username or password. Please try again!' });
+                .json({ message: 'Incorrect username or password' });
             return;
         }
 
@@ -155,15 +155,15 @@ router.post('/login', async (req, res) => {
             req.session.user_id = dbUserData.id;
 
             console.log(
-                '🚀 ~ file: user-routes.js ~ line 57 ~ req.session.save ~ req.session.cookie',
+                'req.session.cookie',
                 req.session.cookie,
-                'USERNAME INFO -------------------------------------', req.session.username,
+                'USERNAME', req.session.username,
                 req.session.user_id
             );
 
             res
                 .status(200)
-                .json({ user: dbUserData, message: 'You are now logged in!' });
+                .json({ user: dbUserData, message: 'You are now logged in' });
         });
     } catch (err) {
         console.log(err);

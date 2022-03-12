@@ -11,10 +11,6 @@ Post.init(
             primaryKey: true,
             autoIncrement: true,
         },
-        creator_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
         post_title: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -23,16 +19,19 @@ Post.init(
             type: DataTypes.TEXT,
             allowNull: true,
         },
-
-
+        user_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'user',
+                key: 'id'
+            },
+        },
     },
     {
         sequelize,
         freezeTableName: true,
         underscored: true,
         modelName: 'post',
-
-
     }
 );
 
