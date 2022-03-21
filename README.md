@@ -12,8 +12,10 @@ SO THAT I can publish articles, blog posts, and my thoughts and opinions
 
 ## Screenshots
 
-![Main Page](assets/main.png)
+![Main Page](public/media/main.png)
 
 ## Links
 
 Github Repo: https://github.com/carsonccu/Tech-Blog
+
+Heroku: https://tech-blog-12.herokuapp.com/
