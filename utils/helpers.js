@@ -16,10 +16,6 @@ hb.registerHelper('loud', function (aString) {
     return aString.toUpperCase()
 })
 
-// hb.registerHelper("log", function(something) {
-//     console.log(something);
-//   });
-
 hb.registerHelper("debug", function (optionalValue) {
     console.log("Current Context");
     console.log("====================");
