@@ -18,4 +18,4 @@ SO THAT I can publish articles, blog posts, and my thoughts and opinions
 
 Github Repo: https://github.com/carsonccu/Tech-Blog
 
-Heroku: https://tech-blog-12.herokuapp.com/
+Heroku: https://tech-blogg1.herokuapp.com/
