@@ -98,7 +98,7 @@ router.get("/:id", async (req, res) => {
 
         req.session.post_id = post.id;
 
-        console.log("I AM THE POST ID",
+        console.log("I AM THE POSt",
             req.session.post_id)
 
 
